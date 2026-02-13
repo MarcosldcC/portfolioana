@@ -50,7 +50,7 @@ export function AdminSidebar() {
   return (
     <aside
       className={cn(
-        "sticky top-0 flex h-screen flex-col border-r border-border bg-[#dacbb8] transition-all duration-300",
+        "sticky top-0 flex h-screen flex-col border-r border-border bg-[#E6DBC9] transition-all duration-300",
         collapsed ? "w-[68px]" : "w-64"
       )}
     >
@@ -105,19 +105,23 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Footer */}
       <div className="border-t border-border/50 p-3">
-        <Link
-          href="/"
+        <button
+          onClick={async () => {
+            // We can't import server action directly here if not set up for it, better to wrap or just use client
+            // But let's try importing it at top
+            const { signOut } = await import("@/app/actions/auth");
+            await signOut();
+          }}
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-ink/5 hover:text-ink",
+            "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-ink/5 hover:text-ink",
             collapsed && "justify-center px-2"
           )}
           title={collapsed ? "Sair" : undefined}
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!collapsed && <span className="font-sans">Sair</span>}
-        </Link>
+        </button>
       </div>
     </aside>
   );

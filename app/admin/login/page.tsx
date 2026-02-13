@@ -1,25 +1,26 @@
 "use client";
 
-import React from "react"
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock } from "lucide-react";
+import React, { useState } from "react";
+// import { useRouter } from "next/navigation"; // Not needed if action handles redirect, but useful for client-side nav if needed, though action uses redirect()
+import { Eye, EyeOff, Lock, Loader2 } from "lucide-react";
+import { login } from "./actions";
+import { toast } from "sonner";
 
 export default function AdminLogin() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // const router = useRouter(); 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
-    // Front-end only: simulate login
-    setTimeout(() => {
-      router.push("/admin");
-    }, 800);
+
+    const result = await login(formData); // result will be undefined if redirect happens, otherwise it returns an error object
+
+    if (result?.error) {
+      toast.error(result.error);
+      setIsLoading(false);
+    }
+    // If successful, redirect happens on server side
   };
 
   return (
@@ -59,11 +60,11 @@ export default function AdminLogin() {
               Painel Admin
             </h1>
             <p className="mt-2 font-sans text-sm text-muted-foreground">
-              Acesse sua area de gerenciamento
+              Acesse sua área de gerenciamento
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <form action={handleSubmit} className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="email"
@@ -73,9 +74,8 @@ export default function AdminLogin() {
               </label>
               <input
                 id="email"
+                name="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
                 className="rounded-lg border border-border bg-background px-4 py-3 font-sans text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-rose focus:ring-2 focus:ring-rose/20"
@@ -92,9 +92,8 @@ export default function AdminLogin() {
               <div className="relative">
                 <input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Digite sua senha"
                   required
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 pr-11 font-sans text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-rose focus:ring-2 focus:ring-rose/20"
@@ -117,9 +116,14 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-2 rounded-lg bg-rose py-3 font-sans text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
+              className="mt-2 flex items-center justify-center rounded-lg bg-rose py-3 font-sans text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
             >
-              {isLoading ? "Entrando..." : "Entrar"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : "Entrar"}
             </button>
           </form>
 

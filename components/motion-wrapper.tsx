@@ -9,6 +9,8 @@ interface MotionWrapperProps {
     className?: string;
     delay?: number;
     direction?: "up" | "down" | "left" | "right";
+    onClick?: () => void;
+    style?: React.CSSProperties;
 }
 
 export function MotionWrapper({
@@ -16,7 +18,10 @@ export function MotionWrapper({
     className = "",
     delay = 0,
     direction = "up",
+    onClick,
+    style,
 }: MotionWrapperProps) {
+
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -46,6 +51,7 @@ export function MotionWrapper({
             }
             transition={{ duration: 0.6, delay: delay, ease: "easeOut" }}
             className={className}
+            onClick={onClick}
         >
             {children}
         </motion.div>

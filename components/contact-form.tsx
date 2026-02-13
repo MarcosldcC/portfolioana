@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { sendMessage } from "@/app/actions/contact";
 
 const formSchema = z.object({
     name: z.string().min(2, {
@@ -31,7 +32,7 @@ const formSchema = z.object({
     }),
 });
 
-export function ContactForm() {
+export function ContactForm({ title, subtitle }: { title?: string, subtitle?: string }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -45,23 +46,32 @@ export function ContactForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsSubmitting(true);
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        console.log(values);
-        toast.success("Mensagem enviada com sucesso!");
-        form.reset();
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("email", values.email);
+        formData.append("message", values.message);
+
+        const result = await sendMessage(formData);
+
         setIsSubmitting(false);
+
+        if (result.success) {
+            toast.success("Mensagem enviada com sucesso!");
+            form.reset();
+        } else {
+            toast.error(result.error || "Erro ao enviar mensagem.");
+        }
     }
 
     return (
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
             <div className="mb-6">
                 <h3 className="font-serif text-2xl font-bold text-ink">
-                    Envie uma mensagem
+                    {title || "Envie uma mensagem"}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                    Preencha o formulário abaixo e entrarei em contato em breve.
+                    {subtitle || "Preencha o formulário abaixo e entrarei em contato em breve."}
                 </p>
             </div>
 

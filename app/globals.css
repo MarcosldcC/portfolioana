@@ -4,39 +4,80 @@
 
 @layer base {
   :root {
-    --background: 25 33% 90%;
+    /* Base Colors (HSL) */
+
+    /* Background: #e6d8c9 (Sand) */
+    --background: 32 35% 85%;
+
+    /* Foreground: #1c1c1c (Ink) */
     --foreground: 0 0% 11%;
-    --card: 25 33% 93%;
+
+    /* Card: Lighter than Sand (approx #f3ebe3) */
+    --card: 32 35% 92%;
     --card-foreground: 0 0% 11%;
-    --popover: 25 33% 90%;
+
+    /* Popover: Same as Card */
+    --popover: 32 35% 92%;
     --popover-foreground: 0 0% 11%;
-    --primary: 353 55% 71%;
+
+    /* Primary: #e28892 (Rose) */
+    --primary: 353 60% 71%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 92 19% 56%;
+    /* White text on rose */
+
+    /* Secondary: #8fa57a (Moss) */
+    --secondary: 89 21% 56%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 25 20% 85%;
-    --muted-foreground: 0 0% 35%;
-    --accent: 200 18% 52%;
+
+    /* Accent: #6f8c9b (Slate) */
+    --accent: 200 19% 52%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
+
+    /* Muted: Beige Greyish (approx #d2c8bc) */
+    --muted: 33 15% 78%;
+    /* Muted Foreground: Grey 35% */
+    --muted-foreground: 0 0% 35%;
+
+    /* Destructive: Rose or Red */
+    --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 25 20% 80%;
-    --input: 25 20% 82%;
-    --ring: 353 55% 71%;
+
+    /* Border: Darker Beige (approx #d1c0ad) */
+    --border: 32 25% 75%;
+    --input: 32 25% 75%;
+    --ring: 353 60% 71%;
+    /* Rose ring */
+
     --radius: 0.75rem;
-    --chart-1: 353 55% 71%;
-    --chart-2: 92 19% 56%;
-    --chart-3: 200 18% 52%;
-    --chart-4: 25 33% 90%;
+
+    /* Chart / Aux Tokens */
+    --chart-1: 353 60% 71%;
+    /* Rose */
+    --chart-2: 89 21% 56%;
+    /* Moss */
+    --chart-3: 200 19% 52%;
+    /* Slate */
+    --chart-4: 32 35% 85%;
+    /* Sand */
     --chart-5: 0 0% 11%;
-    --sidebar-background: 25 33% 90%;
+    /* Ink */
+
+    /* Sidebar */
+    --sidebar-background: 32 35% 92%;
     --sidebar-foreground: 0 0% 11%;
-    --sidebar-primary: 353 55% 71%;
+    --sidebar-primary: 353 60% 71%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 25 20% 85%;
+    --sidebar-accent: 33 15% 78%;
     --sidebar-accent-foreground: 0 0% 11%;
-    --sidebar-border: 25 20% 80%;
-    --sidebar-ring: 353 55% 71%;
+    --sidebar-border: 32 25% 75%;
+    --sidebar-ring: 353 60% 71%;
+
+    /* Custom Colors (Hex for utilities) */
+    --color-rose: #e28892;
+    --color-sand: #e6d8c9;
+    --color-ink: #1c1c1c;
+    --color-moss: #8fa57a;
+    --color-slate: #6f8c9b;
   }
 }
 
@@ -44,9 +85,11 @@
   * {
     @apply border-border;
   }
+
   html {
     scroll-behavior: smooth;
   }
+
   body {
     @apply bg-background text-foreground;
   }

@@ -85,6 +85,11 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  icons: {
+    icon: "/Galdinologo.png",
+    shortcut: "/Galdinologo.png",
+    apple: "/Galdinologo.png",
+  },
 };
 
 export default function RootLayout({

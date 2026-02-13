@@ -1,0 +1,137 @@
+insert into public.site_content (id, content)
+values (
+  'main',
+  '{
+    "hero": {
+        "greeting": "Olá, eu sou",
+        "title": "Ana Carolina",
+        "description": "Transformando marcas em experiências digitais memoráveis. Estratégia, criatividade e resultados que conectam.",
+        "ctaPortfolio": "Ver Portfólio",
+        "ctaContact": "Fale Comigo"
+    },
+    "about": {
+        "title": "Sobre Mim",
+        "subtitle": "Criando conexões autênticas",
+        "description": "Sou apaixonada por transformar marcas em histórias que conectam. Com experiência em estratégia digital, criação de conteúdo e gestão de redes sociais, ajudo negócios a encontrarem sua voz única no mundo digital. Acredito que cada marca tem uma história para contar, e meu trabalho é garantir que essa história chegue às pessoas certas, no momento certo, com a mensagem certa.",
+        "stats": [
+            {
+                "label": "Clientes atendidos",
+                "value": "50+",
+                "color": "rose"
+            },
+            {
+                "label": "Anos de experiência",
+                "value": "3+",
+                "color": "moss"
+            },
+            {
+                "label": "Crescimento médio",
+                "value": "200%",
+                "color": "slate"
+            }
+        ],
+        "image": "/images/about-photo.jpg"
+    },
+    "services": {
+        "title": "Meus Serviços",
+        "subtitle": "O que eu faço",
+        "items": [
+            {
+                "title": "Identidade Visual",
+                "description": "Criação de identidade visual coesa para suas redes sociais, alinhada com a essência da sua marca.",
+                "icon": "Palette",
+                "color": "rose"
+            },
+            {
+                "title": "Criação de Conteúdo",
+                "description": "Produção de conteúdo estratégico e visualmente atrativo que gera engajamento e conexão.",
+                "icon": "Camera",
+                "color": "moss"
+            },
+            {
+                "title": "Estratégia Digital",
+                "description": "Planejamento estratégico personalizado para alcançar seus objetivos de negócio nas redes.",
+                "icon": "Target",
+                "color": "slate"
+            },
+            {
+                "title": "Gestão de Redes",
+                "description": "Gerenciamento completo das suas redes sociais com calendário editorial e interação ativa.",
+                "icon": "MessageCircle",
+                "color": "rose"
+            },
+            {
+                "title": "Análise de Métricas",
+                "description": "Monitoramento e análise de dados para otimizar resultados e direcionar ações futuras.",
+                "icon": "BarChart3",
+                "color": "moss"
+            },
+            {
+                "title": "Tráfego Pago",
+                "description": "Gestão de campanhas de anúncios no Instagram, Facebook e Google para acelerar resultados.",
+                "icon": "TrendingUp",
+                "color": "slate"
+            }
+        ]
+    },
+    "portfolio": {
+        "title": "Portfólio",
+        "subtitle": "Meu trabalho",
+        "items": [
+            {
+                "id": "1",
+                "title": "Branding Café Artesanal",
+                "category": "Identidade Visual",
+                "description": "Redesign completo da presença digital com aumento de 180% no engajamento.",
+                "image": "/images/portfolio-1.jpg"
+            },
+            {
+                "id": "2",
+                "title": "Lançamento Moda Sustentável",
+                "category": "Estratégia & Conteúdo",
+                "description": "Campanha de lançamento com alcance orgânico de 50k em 30 dias.",
+                "image": "/images/portfolio-2.jpg"
+            },
+            {
+                "id": "3",
+                "title": "Studio de Beleza Premium",
+                "category": "Gestão de Redes",
+                "description": "Crescimento de 300% em seguidores qualificados em 6 meses.",
+                "image": "/images/portfolio-3.jpg"
+            },
+            {
+                "id": "4",
+                "title": "Restaurante Gastronômico",
+                "category": "Criação de Conteúdo",
+                "description": "Produção de conteúdo visual que triplicou as reservas online.",
+                "image": "/images/portfolio-4.jpg"
+            }
+        ]
+    },
+    "social": {
+        "links": [
+            {
+                "platform": "Instagram",
+                "url": "https://instagram.com/seuuser",
+                "color": "rose"
+            },
+            {
+                "platform": "TikTok",
+                "url": "https://tiktok.com/@seuuser",
+                "color": "ink"
+            },
+            {
+                "platform": "LinkedIn",
+                "url": "https://linkedin.com/in/seuuser",
+                "color": "slate"
+            },
+            {
+                "platform": "Behance",
+                "url": "https://behance.net/seuuser",
+                "color": "blue"
+            }
+        ]
+    }
+  }'::jsonb
+)
+on conflict (id) do nothing;
