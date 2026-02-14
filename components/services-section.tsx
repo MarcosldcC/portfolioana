@@ -84,17 +84,8 @@ export function ServicesSection({ content, theme }: ServicesSectionProps & { the
             const formattedName = formatIconName(service.icon);
             const Icon = (LucideIcons as any)[formattedName] || LucideIcons.Palette;
 
-            // Alternating colors logic: Rose, Moss, Slate
-            const colorCycle = ["rose", "moss", "slate"];
-            const colorName = colorCycle[index % 3];
-
-            const colorMap = {
-              rose: "text-rose bg-rose/10",
-              moss: "text-moss bg-moss/10",
-              slate: "text-slate bg-slate/10"
-            };
-
-            const colors = colorMap[colorName as keyof typeof colorMap];
+            // Color logic: All items use Rose
+            const colors = "text-rose bg-rose/10";
 
             return (
               <MotionWrapper
