@@ -121,7 +121,7 @@ export default function BriefingsClient({ initialBriefings }: BriefingsClientPro
     const handleReplyClick = (briefing: Briefing) => {
         setReplyingTo(briefing);
         setReplySubject(`Re: Contato Portfolio`);
-        setReplyMessage(`Olá ${briefing.name},\n\nObrigado pelo seu contato.\n\n`);
+        setReplyMessage(`Obrigado pelo seu contato.\n\n`);
         setReplyOpen(true);
     };
 
