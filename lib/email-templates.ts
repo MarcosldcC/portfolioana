@@ -24,9 +24,9 @@ export function getBriefingReplyTemplate(name: string, message: string) {
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(234, 103, 155, 0.08);">
                         <!-- Header -->
                         <tr>
-                            <td align="center" style="background-color: #ffffff; padding: 40px 30px; border-bottom: 1px solid #f0f0f0;">
-                                <!-- IMPORTANTE: Substitua a URL abaixo pela URL oficial do seu site quando estiver publicado -->
-                                <img src="https://portfolioana-three.vercel.app/Galdino.png" alt="Lina Galdino" width="180" style="display: block; width: 180px; max-width: 100%;">
+                            <td align="center" style="background-color: #ffffff; padding: 45px 30px; border-bottom: 1px solid #f0f0f0;">
+                                <h1 style="color: ${primaryColor}; margin: 0; font-family: 'Amoresa', 'Georgia', serif; font-size: 38px; font-weight: normal; font-style: italic;">Lina Galdino</h1>
+                                <p style="color: #999999; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 4px; font-family: 'Helvetica', sans-serif;">Estratégia & Criatividade</p>
                             </td>
                         </tr>
                         
