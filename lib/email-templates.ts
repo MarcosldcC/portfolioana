@@ -74,7 +74,7 @@ export function getBriefingReplyTemplate(name: string, message: string) {
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
                         <tr>
                             <td align="center" style="padding: 25px 0; font-size: 11px; color: #bbbbbb; text-transform: uppercase; letter-spacing: 1px;">
-                                © 2024 Lina Galdino • Consultoria Digital
+                                © 2026 Lina Galdino • Consultoria Digital
                             </td>
                         </tr>
                     </table>
