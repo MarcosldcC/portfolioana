@@ -29,6 +29,8 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 type Tab = "textos" | "imagens" | "social" | "services" | "versions" | "contato";
 
@@ -295,8 +297,21 @@ function TextosEditor({ data, setData }: { data: any; setData: any }) {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground border-b pb-2">Estatísticas</h4>
-            <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b pb-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Estatísticas</h4>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="show-stats"
+                  checked={data.about.showStats !== false}
+                  onCheckedChange={(checked) => setData((prev: any) => ({
+                    ...prev,
+                    about: { ...prev.about, showStats: checked }
+                  }))}
+                />
+                <Label htmlFor="show-stats" className="text-xs font-bold text-ink/80 cursor-pointer">Exibir seção</Label>
+              </div>
+            </div>
+            <div className={cn("flex flex-col gap-4 transition-opacity", data.about.showStats === false && "opacity-50")}>
               {(data.about.stats || []).map((stat: any, index: number) => (
                 <div key={index} className="grid grid-cols-2 gap-4 border p-3 rounded-lg bg-background">
                   <Field label={`Valor ${index + 1}`}>

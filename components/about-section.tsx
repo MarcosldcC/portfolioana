@@ -10,6 +10,7 @@ interface AboutSectionProps {
     subtitle: string;
     description: string;
     image: string;
+    showStats?: boolean;
     stats: Array<{
       label: string;
       value: string;
@@ -105,26 +106,28 @@ export function AboutSection({ content, theme }: AboutSectionProps & { theme?: a
               única no mundo digital.`}
             </div>
 
-            <div className="mt-8 grid grid-cols-3 gap-6">
-              {(content?.stats && content.stats.length > 0 ? content.stats : [
-                { label: "Clientes atendidos", value: "50+" },
-                { label: "Anos de experiência", value: "3+" },
-                { label: "Crescimento médio", value: "200%" },
-              ]).map((stat: any, index: number) => {
-                const colors = ["text-pink", "text-rose", "text-blush"];
-                const colorClass = colors[index % colors.length];
-                return (
-                  <div key={index}>
-                    <p className={cn("font-serif text-3xl font-black", colorClass)}>
-                      {stat.value}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground font-bold uppercase tracking-wider">
-                      {stat.label}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+            {content?.showStats !== false && (
+              <div className="mt-8 grid grid-cols-3 gap-6">
+                {(content?.stats && content.stats.length > 0 ? content.stats : [
+                  { label: "Clientes atendidos", value: "50+" },
+                  { label: "Anos de experiência", value: "3+" },
+                  { label: "Crescimento médio", value: "200%" },
+                ]).map((stat: any, index: number) => {
+                  const colors = ["text-pink", "text-rose", "text-blush"];
+                  const colorClass = colors[index % colors.length];
+                  return (
+                    <div key={index}>
+                      <p className={cn("font-serif text-3xl font-black", colorClass)}>
+                        {stat.value}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground font-bold uppercase tracking-wider">
+                        {stat.label}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </MotionWrapper>
         </div>
       </div>

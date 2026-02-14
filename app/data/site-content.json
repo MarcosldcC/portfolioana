@@ -7,6 +7,7 @@
     "ctaPortfolio": "Ver Portfólio"
   },
   "about": {
+    "showStats": true,
     "image": "/images/about-photo.jpg",
     "stats": [
       {
