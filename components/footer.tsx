@@ -1,5 +1,5 @@
 import * as LucideIcons from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatIconName } from "@/lib/utils";
 import Image from "next/image";
 
 interface FooterProps {
@@ -60,9 +60,8 @@ export function Footer({ content, theme }: FooterProps) {
 
         <div className="flex items-center gap-6">
           {links.map((link, index) => {
-            let platformName = link.platform;
-            if (platformName === 'LinkedIn') platformName = 'Linkedin';
-            const Icon = (LucideIcons as any)[platformName] || (LucideIcons as any)[link.platform] || LucideIcons.Globe;
+            const formattedName = formatIconName(link.platform);
+            const Icon = (LucideIcons as any)[formattedName] || LucideIcons.Globe;
             return (
               <a
                 key={index}

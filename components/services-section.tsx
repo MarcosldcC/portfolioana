@@ -1,7 +1,7 @@
 "use client";
 import * as LucideIcons from "lucide-react";
 import { MotionWrapper } from "./motion-wrapper";
-import { cn } from "@/lib/utils";
+import { cn, formatIconName } from "@/lib/utils";
 import { incrementServiceClick } from "@/app/actions/analytics";
 
 interface ServicesSectionProps {
@@ -81,7 +81,8 @@ export function ServicesSection({ content, theme }: ServicesSectionProps & { the
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => {
-            const Icon = (LucideIcons as any)[service.icon] || LucideIcons.Palette;
+            const formattedName = formatIconName(service.icon);
+            const Icon = (LucideIcons as any)[formattedName] || LucideIcons.Palette;
 
             // Alternating colors logic: Rose, Moss, Slate
             const colorCycle = ["rose", "moss", "slate"];

@@ -22,8 +22,9 @@ import {
   RotateCcw,
   Mail,
 } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn, formatIconName } from "@/lib/utils";
 import { getSiteContent, updateSiteContent, getSiteVersions, restoreVersion } from "@/app/actions/site-editor";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -406,7 +407,15 @@ function ServicesEditor({ data, setData }: { data: any; setData: any }) {
                 <Input value={item.title} onChange={(e) => handleItemChange(index, "title", e.target.value)} className="font-bold" />
               </Field>
               <Field label="Ícone" description="Nome Lucide">
-                <Input value={item.icon} onChange={(e) => handleItemChange(index, "icon", e.target.value)} />
+                <div className="flex gap-2">
+                  <Input value={item.icon} onChange={(e) => handleItemChange(index, "icon", e.target.value)} placeholder="Ex: Palette ou shopping-bag" />
+                  <div className="flex aspect-square h-10 w-10 items-center justify-center rounded-md border border-border bg-muted/30">
+                    {(() => {
+                      const Icon = (LucideIcons as any)[formatIconName(item.icon)];
+                      return Icon ? <Icon className="h-5 w-5 text-rose" /> : <div className="text-[10px] text-muted-foreground">?</div>;
+                    })()}
+                  </div>
+                </div>
               </Field>
             </div>
             <Field label="Descrição">
