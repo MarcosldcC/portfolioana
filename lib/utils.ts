@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatIconName(name: string): string {
   if (!name) return "";
+
+  // Caso especial para LinkedIn (Lucide usa 'Linkedin' com 'i' minúsculo)
+  if (name.toLowerCase() === "linkedin") return "Linkedin";
+
   // Converte kebab-case, snake_case ou espaços para PascalCase
   // Ex: shopping-bag -> ShoppingBag, palette -> Palette
   return name
