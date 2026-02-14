@@ -116,8 +116,8 @@ export function ContactSection({ content, theme }: ContactSectionProps & { theme
                 onClick={() => incrementClick('contact')}
                 className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-rose/30"
               >
-                <div className="flex items-center justify-center rounded-lg p-3 bg-moss/10">
-                  <Instagram className="h-5 w-5 text-moss" />
+                <div className="flex items-center justify-center rounded-lg p-3 bg-rose/10">
+                  <Instagram className="h-5 w-5 text-rose" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-ink">Instagram</p>
@@ -134,8 +134,8 @@ export function ContactSection({ content, theme }: ContactSectionProps & { theme
                 onClick={() => incrementClick('contact')}
                 className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md hover:border-rose/30"
               >
-                <div className="flex items-center justify-center rounded-lg p-3 bg-slate/10">
-                  <MessageCircle className="h-5 w-5 text-slate" />
+                <div className="flex items-center justify-center rounded-lg p-3 bg-rose/10">
+                  <MessageCircle className="h-5 w-5 text-rose" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-ink">WhatsApp</p>

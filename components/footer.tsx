@@ -69,7 +69,7 @@ export function Footer({ content, theme }: FooterProps) {
                 target={link.platform === 'Mail' ? undefined : "_blank"}
                 rel={link.platform === 'Mail' ? undefined : "noopener noreferrer"}
                 aria-label={link.platform}
-                className="text-muted-foreground transition-colors hover:text-rose hover:scale-110 duration-300"
+                className="text-rose transition-all hover:text-rose/70 hover:scale-110 duration-300"
               >
                 <Icon size={20} />
               </a>
