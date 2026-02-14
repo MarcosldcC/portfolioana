@@ -86,7 +86,7 @@ interface CalendarEvent {
     id: string;
     title: string;
     date: Date;
-    type: "post" | "story" | "reels";
+    type: "post" | "story" | "reels" | "task";
 }
 
 // Mock Data - Start empty
@@ -116,6 +116,15 @@ export default function ProjectHubPage({ params }: { params: Promise<{ id: strin
     const [isEditLinkDialogOpen, setIsEditLinkDialogOpen] = useState(false);
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
 
+    // Help function to parse date strings safely
+    const parseDateSafely = (dateStr: string | Date) => {
+        if (dateStr instanceof Date) return dateStr;
+        if (!dateStr) return new Date();
+        // If it's a YYYY-MM-DD string, append T12:00:00 to avoid UTC timezone shifts
+        const cleanDate = dateStr.includes('T') ? dateStr : `${dateStr}T12:00:00`;
+        return new Date(cleanDate);
+    };
+
     // Load project data
     useEffect(() => {
         async function loadProject() {
@@ -127,10 +136,10 @@ export default function ProjectHubPage({ params }: { params: Promise<{ id: strin
                 if (data.tasks) setTasks(data.tasks);
                 if (data.links) setLinks(data.links);
                 if (data.events) {
-                    // Convert date strings back to Date objects
+                    // Convert date strings back to Date objects safely
                     const parsedEvents = data.events.map((e: any) => ({
                         ...e,
-                        date: new Date(e.date)
+                        date: parseDateSafely(e.date)
                     }));
                     setEvents(parsedEvents);
                 }
@@ -213,7 +222,7 @@ export default function ProjectHubPage({ params }: { params: Promise<{ id: strin
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const newTask: Task = {
-            id: Math.random().toString(),
+            id: crypto.randomUUID(),
             title: formData.get("title") as string,
             description: formData.get("description") as string,
             status: newTaskStatus,
@@ -227,10 +236,10 @@ export default function ProjectHubPage({ params }: { params: Promise<{ id: strin
         let updatedEvents = events;
         if (hasDeadline && taskEndDate) {
             const newEvent: CalendarEvent = {
-                id: Math.random().toString(),
+                id: crypto.randomUUID(),
                 title: `📋 ${newTask.title}`,
-                date: new Date(taskEndDate),
-                type: "post"
+                date: parseDateSafely(taskEndDate),
+                type: "task"
             };
             updatedEvents = [...events, newEvent];
             setEvents(updatedEvents);
@@ -293,19 +302,20 @@ export default function ProjectHubPage({ params }: { params: Promise<{ id: strin
                 updatedEvents[existingEventIndex] = {
                     ...updatedEvents[existingEventIndex],
                     title: `📋 ${updatedTask.title}`,
-                    date: new Date(taskEndDate)
+                    date: parseDateSafely(taskEndDate)
                 };
                 setEvents(updatedEvents);
             } else {
                 updatedEvents = [...events, {
-                    id: Math.random().toString(),
+                    id: crypto.randomUUID(),
                     title: `📋 ${updatedTask.title}`,
-                    date: new Date(taskEndDate),
-                    type: "post"
+                    date: parseDateSafely(taskEndDate),
+                    type: "task"
                 }];
                 setEvents(updatedEvents);
             }
         }
+
 
         const success = await saveProjectData({ tasks: updatedTasks, events: updatedEvents });
 
