@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { createAdminClient } from '@/utils/supabase/admin';
+import { revalidatePath } from 'next/cache';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -69,9 +70,14 @@ export async function updateSiteContent(newData: any, note?: string) {
 
         if (versionError) console.error('Error saving version:', versionError);
 
-        // 3. Sync local file
-        await fs.writeFile(DATA_FILE_PATH, JSON.stringify(newData, null, 2), 'utf-8');
+        // 3. Sync local file (optional fallback - might fail in read-only environments like Vercel)
+        try {
+            await fs.writeFile(DATA_FILE_PATH, JSON.stringify(newData, null, 2), 'utf-8');
+        } catch (fileError) {
+            console.warn('Could not sync local file, but DB update was successful:', fileError);
+        }
 
+        revalidatePath('/');
         return { success: true };
     } catch (error) {
         console.error('Error updating site content:', error);
