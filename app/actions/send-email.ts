@@ -7,6 +7,7 @@ interface SendEmailData {
     subject: string;
     message: string;
     replyTo: string;
+    html?: string;
 }
 
 export async function sendEmail(data: SendEmailData) {
@@ -28,7 +29,7 @@ export async function sendEmail(data: SendEmailData) {
             replyTo: data.replyTo,
             subject: data.subject,
             text: data.message, // Plain text body
-            // html: '<p>' + data.message + '</p>' // HTML body content
+            html: data.html, // HTML body content
         };
 
         const info = await transporter.sendMail(mailOptions);

@@ -30,6 +30,7 @@ import { sendEmail } from "@/app/actions/send-email";
 import { updateMessageStatus } from "@/app/actions/contact";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getBriefingReplyTemplate } from "@/lib/email-templates";
 
 type BriefingStatus = "novo" | "lido" | "arquivado";
 
@@ -129,11 +130,14 @@ export default function BriefingsClient({ initialBriefings }: BriefingsClientPro
 
         setIsSending(true);
         try {
+            const htmlContent = getBriefingReplyTemplate(replyingTo.name, replyMessage);
+
             const result = await sendEmail({
                 to: replyingTo.email,
                 subject: replySubject,
                 message: replyMessage,
-                replyTo: "no-reply@portfolio.com"
+                replyTo: "no-reply@portfolio.com",
+                html: htmlContent
             });
 
             if (!result.success) {
