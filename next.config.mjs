@@ -4,6 +4,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
     remotePatterns: [
       {
         protocol: 'http',

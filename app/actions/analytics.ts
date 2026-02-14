@@ -218,25 +218,34 @@ export async function uploadImage(formData: FormData) {
         const file = formData.get('file') as File;
         if (!file) throw new Error('No file uploaded');
 
-        const supabase = await createClient();
+        // Use Admin Client to ensure we have permission to upload
+        const supabase = createAdminClient();
         const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
         const { data, error } = await supabase.storage
             .from('portfolio-images')
-            .upload(filename, file, {
-                cacheControl: '3600',
-                upsert: false
+            .upload(filename, buffer, {
+                cacheControl: '0',
+                upsert: false,
+                contentType: file.type || 'image/png' // Fallback to image/png
             });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase Storage Error:', error);
+            throw error;
+        }
 
         const { data: { publicUrl } } = supabase.storage
             .from('portfolio-images')
             .getPublicUrl(filename);
 
+        console.log('Successfully uploaded image:', publicUrl);
         return { success: true, url: publicUrl };
     } catch (error) {
-        console.error('Upload error:', error);
-        return { success: false, error: 'Failed to upload image' };
+        console.error('Detailed Upload error:', error);
+        return { success: false, error: (error as Error).message || 'Failed to upload image' };
     }
 }
