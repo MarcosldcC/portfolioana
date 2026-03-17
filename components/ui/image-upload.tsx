@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ImagePlus, Trash, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { uploadImage } from "@/app/actions/analytics"; // Reusing existing action
 
 interface ImageUploadProps {
     value: string;
@@ -28,13 +27,13 @@ export function ImageUpload({
         formData.append("file", file);
 
         try {
-            const result = await uploadImage(formData);
-            if (result.success && result.url) {
-                onChange(result.url);
-            } else {
-                console.error("Upload failed", result.error);
-                // Optionally show error toast here but parent context might be better
-            }
+            const res = await fetch("/admin/api/upload-image", {
+                method: "POST",
+                body: formData,
+            });
+            const result = await res.json();
+            if (result?.success && result?.url) onChange(result.url);
+            else console.error("Upload failed", result?.error);
         } catch (error) {
             console.error("Upload error", error);
         } finally {

@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { uploadImage } from "@/app/actions/analytics";
 import {
   Dialog,
   DialogContent,
@@ -447,15 +446,24 @@ function ImageUploader({
     const formData = new FormData();
     formData.append("file", file);
 
-    const result = await uploadImage(formData);
+    try {
+      const res = await fetch("/admin/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await res.json();
 
-    if (result.success && result.url) {
-      onUploadComplete(result.url);
-      toast.success("Imagem enviada com sucesso!");
-    } else {
+      if (result?.success && result?.url) {
+        onUploadComplete(result.url);
+        toast.success("Imagem enviada com sucesso!");
+      } else {
+        toast.error(result?.error || "Erro ao enviar imagem.");
+      }
+    } catch (e) {
       toast.error("Erro ao enviar imagem.");
+    } finally {
+      setIsUploading(false);
     }
-    setIsUploading(false);
   };
 
   return (
