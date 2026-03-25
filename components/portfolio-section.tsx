@@ -1,8 +1,15 @@
 "use client";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { StarburstDecoration } from "./decorative-elements";
 import { MotionWrapper } from "./motion-wrapper";
 import { incrementClick } from "@/app/actions/analytics";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface PortfolioSectionProps {
   projects?: any[];
@@ -44,6 +51,8 @@ const textColorMap: Record<string, string> = {
   white: "text-white",
 };
 
+type PortfolioItem = NonNullable<PortfolioSectionProps["content"]>["items"][number];
+
 export function PortfolioSection({ content, theme }: PortfolioSectionProps & { theme?: any }) {
   const isHex = (val?: string) => val?.startsWith("#");
 
@@ -74,6 +83,20 @@ export function PortfolioSection({ content, theme }: PortfolioSectionProps & { t
 
   const projects = content?.items && content.items.length > 0 ? content.items : [];
 
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailProject, setDetailProject] = useState<PortfolioItem | null>(null);
+  const closeDetailTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openProject = (project: PortfolioItem) => {
+    if (closeDetailTimerRef.current) {
+      clearTimeout(closeDetailTimerRef.current);
+      closeDetailTimerRef.current = null;
+    }
+    void incrementClick("project", project.title);
+    setDetailProject(project);
+    setDetailOpen(true);
+  };
+
   return (
     <section id="portfolio" className="relative px-6 py-24 md:py-32 bg-ink">
       <StarburstDecoration className="absolute top-16 left-8 opacity-20 md:left-20 text-rose" />
@@ -88,6 +111,64 @@ export function PortfolioSection({ content, theme }: PortfolioSectionProps & { t
           </h2>
         </MotionWrapper>
 
+        <Dialog
+          open={detailOpen}
+          onOpenChange={(open) => {
+            setDetailOpen(open);
+            if (!open) {
+              if (closeDetailTimerRef.current) clearTimeout(closeDetailTimerRef.current);
+              closeDetailTimerRef.current = setTimeout(() => {
+                setDetailProject(null);
+                closeDetailTimerRef.current = null;
+              }, 250);
+            }
+          }}
+        >
+          <DialogContent
+            className="flex max-h-[min(90vh,920px)] w-[calc(100vw-1.5rem)] max-w-4xl flex-col gap-0 overflow-hidden border-white/15 bg-ink p-0 text-sand shadow-2xl sm:rounded-2xl [&>button]:text-sand/90 [&>button]:ring-offset-ink [&>button]:hover:text-white"
+          >
+            {detailProject ? (
+              <>
+                <div className="relative h-[min(52vh,520px)] w-full shrink-0 bg-black/30 sm:h-[min(58vh,560px)]">
+                  <Image
+                    src={detailProject.image || "/placeholder.svg"}
+                    alt={detailProject.title}
+                    fill
+                    priority
+                    sizes="(max-width: 896px) 100vw, 896px"
+                    className="object-contain object-center"
+                  />
+                </div>
+                <div className="flex max-h-[40vh] flex-col gap-3 overflow-y-auto border-t border-white/15 px-6 py-6 md:px-8 md:py-7">
+                  <span
+                    className={`text-xs font-semibold uppercase tracking-widest ${cardCatClass}`}
+                    style={cardCatStyle}
+                  >
+                    {detailProject.category}
+                  </span>
+                  <DialogTitle
+                    className={`font-serif text-2xl font-bold leading-tight md:text-3xl ${cardTitleClass} pr-8 text-left`}
+                    style={cardTitleStyle}
+                  >
+                    {detailProject.title}
+                  </DialogTitle>
+                  {detailProject.description ? (
+                    <DialogDescription asChild>
+                      <p className="text-left text-base leading-relaxed text-sand/95 [text-wrap:pretty]">
+                        {detailProject.description}
+                      </p>
+                    </DialogDescription>
+                  ) : (
+                    <DialogDescription className="text-left text-sm text-sand/70">
+                      Sem descrição para este projeto.
+                    </DialogDescription>
+                  )}
+                </div>
+              </>
+            ) : null}
+          </DialogContent>
+        </Dialog>
+
         <div className="grid gap-6 sm:grid-cols-2">
           {projects.map((project, index) => (
             <MotionWrapper
@@ -98,12 +179,13 @@ export function PortfolioSection({ content, theme }: PortfolioSectionProps & { t
               <div
                 role="button"
                 tabIndex={0}
+                aria-haspopup="dialog"
                 className="flex flex-col outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
-                onClick={() => incrementClick("project", project.title)}
+                onClick={() => openProject(project)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    incrementClick("project", project.title);
+                    openProject(project);
                   }
                 }}
               >
