@@ -93,12 +93,12 @@ export function PortfolioSection({ content, theme }: PortfolioSectionProps & { t
             <MotionWrapper
               key={project.id ?? index}
               delay={index * 0.1}
-              className="group flex min-h-0 flex-col overflow-hidden rounded-2xl bg-ink/80 shadow-md ring-1 ring-white/10 cursor-pointer"
+              className="group flex flex-col overflow-hidden rounded-2xl bg-ink/80 shadow-md ring-1 ring-white/10 cursor-pointer"
             >
               <div
                 role="button"
                 tabIndex={0}
-                className="flex min-h-0 flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+                className="flex flex-col outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
                 onClick={() => incrementClick("project", project.title)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -116,7 +116,8 @@ export function PortfolioSection({ content, theme }: PortfolioSectionProps & { t
                     className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
-                <div className="flex min-h-0 flex-1 flex-col gap-2 border-t border-white/10 p-6 md:p-8">
+                {/* Bloco em fluxo normal (sem flex-1/min-h-0) para o grid não “esmagar” a descrição no Safari/outros */}
+                <div className="flex flex-col gap-2 border-t border-white/15 bg-ink p-6 md:p-8">
                   <span
                     className={`mb-0.5 text-xs font-semibold uppercase tracking-widest ${cardCatClass}`}
                     style={cardCatStyle}
@@ -129,7 +130,11 @@ export function PortfolioSection({ content, theme }: PortfolioSectionProps & { t
                   >
                     {project.title}
                   </h3>
-                  <p className="text-sm leading-relaxed text-sand/80">{project.description}</p>
+                  {project.description ? (
+                    <p className="text-base leading-relaxed text-sand [text-wrap:pretty]">
+                      {project.description}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </MotionWrapper>
