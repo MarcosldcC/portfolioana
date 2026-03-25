@@ -3,7 +3,6 @@ import Image from "next/image";
 import { StarburstDecoration } from "./decorative-elements";
 import { MotionWrapper } from "./motion-wrapper";
 import { incrementClick } from "@/app/actions/analytics";
-import { cn } from "@/lib/utils";
 
 interface PortfolioSectionProps {
   projects?: any[];
@@ -92,27 +91,45 @@ export function PortfolioSection({ content, theme }: PortfolioSectionProps & { t
         <div className="grid gap-6 sm:grid-cols-2">
           {projects.map((project, index) => (
             <MotionWrapper
-              key={index}
+              key={project.id ?? index}
               delay={index * 0.1}
-              className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md"
+              className="group flex min-h-0 flex-col overflow-hidden rounded-2xl bg-ink/80 shadow-md ring-1 ring-white/10 cursor-pointer"
             >
-              <div onClick={() => incrementClick('project', project.title)}>
-                <div className="aspect-[4/3] bg-muted relative">
+              <div
+                role="button"
+                tabIndex={0}
+                className="flex min-h-0 flex-1 flex-col outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+                onClick={() => incrementClick("project", project.title)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    incrementClick("project", project.title);
+                  }
+                }}
+              >
+                <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-muted">
                   <Image
                     src={project.image || "/placeholder.svg"}
                     alt={project.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
-                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-ink/90 via-ink/40 to-transparent p-6 md:p-8">
-                  <span className="mb-2 text-xs font-semibold tracking-widest uppercase text-rose">
+                <div className="flex min-h-0 flex-1 flex-col gap-2 border-t border-white/10 p-6 md:p-8">
+                  <span
+                    className={`mb-0.5 text-xs font-semibold uppercase tracking-widest ${cardCatClass}`}
+                    style={cardCatStyle}
+                  >
                     {project.category}
                   </span>
-                  <h3 className="mb-1 font-serif text-xl font-bold md:text-2xl text-sand">
+                  <h3
+                    className={`font-serif text-xl font-bold md:text-2xl ${cardTitleClass}`}
+                    style={cardTitleStyle}
+                  >
                     {project.title}
                   </h3>
-                  <p className="text-sm transition-colors opacity-70 text-sand">{project.description}</p>
+                  <p className="text-sm leading-relaxed text-sand/80">{project.description}</p>
                 </div>
               </div>
             </MotionWrapper>

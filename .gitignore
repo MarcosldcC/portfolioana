@@ -13,6 +13,9 @@
 # production
 /build
 
+# nested accidental clone (do not commit as submodule)
+/portfolioana/
+
 # misc
 .DS_Store
 *.pem
