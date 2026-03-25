@@ -20,6 +20,9 @@ import {
   History,
   RotateCcw,
   Mail,
+  Video,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import Image from "next/image";
@@ -31,6 +34,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { PortfolioCardMediaCarousel } from "@/components/portfolio-media-carousel";
+import {
+  legacyCoverFromMedia,
+  newMediaId,
+  normalizePortfolioMedia,
+  type PortfolioMediaEntry,
+} from "@/lib/portfolio-item-media";
 
 type Tab = "textos" | "imagens" | "social" | "services" | "versions" | "contato";
 
@@ -447,7 +457,7 @@ function ImageUploader({
     formData.append("file", file);
 
     try {
-      const res = await fetch("/admin/api/upload-image", {
+      const res = await fetch("/admin/api/upload-media", {
         method: "POST",
         body: formData,
       });
@@ -455,12 +465,12 @@ function ImageUploader({
 
       if (result?.success && result?.url) {
         onUploadComplete(result.url);
-        toast.success("Imagem enviada com sucesso!");
+        toast.success("Ficheiro enviado com sucesso!");
       } else {
-        toast.error(result?.error || "Erro ao enviar imagem.");
+        toast.error(result?.error || "Erro ao enviar.");
       }
     } catch (e) {
-      toast.error("Erro ao enviar imagem.");
+      toast.error("Erro ao enviar.");
     } finally {
       setIsUploading(false);
     }
@@ -496,9 +506,170 @@ function ImageUploader({
           />
         </label>
         <p className="font-sans text-[10px] text-muted-foreground">
-          Max 2MB. JPG, PNG.
+          Imagem até ~12&nbsp;MB (JPG, PNG, WebP, GIF, SVG). Envio direto no formulário.
         </p>
       </div>
+    </div>
+  );
+}
+
+async function uploadPortfolioMediaFile(
+  file: File,
+): Promise<{ url: string; kind: "image" | "video" }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch("/admin/api/upload-media", { method: "POST", body: formData });
+  const data = await res.json();
+  if (!data?.success) throw new Error(data?.error || "Falha no envio");
+  return { url: data.url as string, kind: data.kind as "image" | "video" };
+}
+
+function PortfolioItemMediaEditor({
+  item,
+  index,
+  onMediaChange,
+}: {
+  item: Record<string, unknown>;
+  index: number;
+  onMediaChange: (index: number, media: PortfolioMediaEntry[]) => void;
+}) {
+  const media = normalizePortfolioMedia({
+    image: item.image as string | undefined,
+    media: item.media as PortfolioMediaEntry[] | undefined,
+  });
+  const [busy, setBusy] = useState(false);
+  const imageInputRef = React.useRef<HTMLInputElement>(null);
+  const videoInputRef = React.useRef<HTMLInputElement>(null);
+
+  const pushMedia = async (file: File | null) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const { url, kind } = await uploadPortfolioMediaFile(file);
+      onMediaChange(index, [...media, { id: newMediaId(), kind, url }]);
+      toast.success(kind === "video" ? "Vídeo adicionado" : "Imagem adicionada");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro no envio");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const removeAt = (id: string) => {
+    onMediaChange(
+      index,
+      media.filter((m) => m.id !== id),
+    );
+  };
+
+  const reorder = (id: string, dir: -1 | 1) => {
+    const i = media.findIndex((m) => m.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= media.length) return;
+    const next = [...media];
+    [next[i], next[j]] = [next[j], next[i]];
+    onMediaChange(index, next);
+  };
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-border bg-muted/20 p-3">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={busy}
+          className="gap-1"
+          onClick={() => imageInputRef.current?.click()}
+        >
+          <ImageIcon className="h-3.5 w-3.5" />
+          Imagem
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={busy}
+          className="gap-1"
+          onClick={() => videoInputRef.current?.click()}
+        >
+          <Video className="h-3.5 w-3.5" />
+          Vídeo
+        </Button>
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+          className="hidden"
+          onChange={(e) => {
+            void pushMedia(e.target.files?.[0] ?? null);
+            e.target.value = "";
+          }}
+        />
+        <input
+          ref={videoInputRef}
+          type="file"
+          accept="video/mp4,video/webm,video/quicktime"
+          className="hidden"
+          onChange={(e) => {
+            void pushMedia(e.target.files?.[0] ?? null);
+            e.target.value = "";
+          }}
+        />
+      </div>
+      <p className="text-[10px] text-muted-foreground">
+        Ordem = ordem no site. Sem limite fixo no editor; respeite os limites de tamanho do servidor.
+      </p>
+      <ul className="flex flex-col gap-2">
+        {media.map((m, ord) => (
+          <li
+            key={m.id}
+            className="flex items-center gap-2 rounded-md border border-border bg-background/80 px-2 py-1.5 text-xs"
+          >
+            <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+              {ord + 1}
+            </span>
+            <span className="shrink-0 text-muted-foreground">{m.kind === "video" ? "Vídeo" : "Img"}</span>
+            <span className="min-w-0 flex-1 truncate text-[11px]" title={m.url}>
+              {m.url.replace(/^https?:\/\/[^/]+/i, "…")}
+            </span>
+            <div className="flex shrink-0 gap-0.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                aria-label="Subir"
+                onClick={() => reorder(m.id, -1)}
+                disabled={ord === 0}
+              >
+                <ChevronUp className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                aria-label="Descer"
+                onClick={() => reorder(m.id, 1)}
+                disabled={ord === media.length - 1}
+              >
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-destructive hover:text-destructive"
+                aria-label="Remover"
+                onClick={() => removeAt(m.id)}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -509,12 +680,28 @@ function PortfolioEditor({ data, setData }: { data: any; setData: any }) {
     title: "",
     category: "",
     description: "",
-    image: "/placeholder.svg"
+    image: "/placeholder.svg",
+    media: [] as PortfolioMediaEntry[],
+    projectUrl: "",
+    showProjectLink: false,
   });
 
-  const handleItemChange = (index: number, field: string, value: string) => {
+  const handleItemChange = (index: number, field: string, value: string | boolean) => {
     const newItems = [...data.portfolio.items];
     newItems[index] = { ...newItems[index], [field]: value };
+    setData((prev: any) => ({
+      ...prev,
+      portfolio: { ...prev.portfolio, items: newItems }
+    }));
+  };
+
+  const handleItemMedia = (index: number, nextMedia: PortfolioMediaEntry[]) => {
+    const newItems = [...data.portfolio.items];
+    newItems[index] = {
+      ...newItems[index],
+      media: nextMedia,
+      image: legacyCoverFromMedia(nextMedia),
+    };
     setData((prev: any) => ({
       ...prev,
       portfolio: { ...prev.portfolio, items: newItems }
@@ -526,7 +713,10 @@ function PortfolioEditor({ data, setData }: { data: any; setData: any }) {
       title: "",
       category: "",
       description: "",
-      image: "/placeholder.svg"
+      image: "/placeholder.svg",
+      media: [],
+      projectUrl: "",
+      showProjectLink: false,
     });
     setIsModalOpen(true);
   };
@@ -536,9 +726,22 @@ function PortfolioEditor({ data, setData }: { data: any; setData: any }) {
       toast.error("O título é obrigatório");
       return;
     }
+    const media =
+      newProject.media.length > 0
+        ? newProject.media
+        : normalizePortfolioMedia({ image: newProject.image });
+    const item = {
+      title: newProject.title,
+      category: newProject.category,
+      description: newProject.description,
+      image: legacyCoverFromMedia(media),
+      media,
+      projectUrl: newProject.projectUrl || "",
+      showProjectLink: !!newProject.showProjectLink,
+    };
     setData((prev: any) => ({
       ...prev,
-      portfolio: { ...prev.portfolio, items: [...prev.portfolio.items, newProject] }
+      portfolio: { ...prev.portfolio, items: [...prev.portfolio.items, item] }
     }));
     setIsModalOpen(false);
     toast.success("Projeto adicionado!");
@@ -617,11 +820,15 @@ function PortfolioEditor({ data, setData }: { data: any; setData: any }) {
               key={index}
               className="group relative overflow-hidden rounded-xl border border-border bg-background p-4 flex flex-col gap-4"
             >
-              <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
-                <Image src={item.image || "/placeholder.svg"} alt={item.title} fill className="object-cover" />
+              <div className="relative overflow-hidden rounded-lg border border-border bg-muted">
+                <PortfolioCardMediaCarousel
+                  media={normalizePortfolioMedia(item)}
+                  title={item.title}
+                />
                 <button
+                  type="button"
                   onClick={() => removeItem(index)}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  className="absolute top-2 right-2 z-20 bg-red-500 text-white p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -634,19 +841,37 @@ function PortfolioEditor({ data, setData }: { data: any; setData: any }) {
                   <Field label="Categoria">
                     <Input value={item.category} onChange={(e) => handleItemChange(index, "category", e.target.value)} />
                   </Field>
-                  <Field label="ID/Link">
-                    <Input value={item.id} onChange={(e) => handleItemChange(index, "id", e.target.value)} />
+                  <Field label="ID interno (opcional)">
+                    <Input
+                      value={item.id || ""}
+                      onChange={(e) => handleItemChange(index, "id", e.target.value)}
+                      placeholder="ex: vitória-farma"
+                    />
                   </Field>
                 </div>
                 <Field label="Descrição">
                   <Textarea value={item.description} onChange={(e) => handleItemChange(index, "description", e.target.value)} rows={2} />
                 </Field>
-                <Field label="Upload">
-                  <ImageUploader
-                    currentImage={item.image}
-                    onUploadComplete={(url) => handleItemChange(index, "image", url)}
+                <Field label="Imagens e vídeos (ordem no carrossel)">
+                  <PortfolioItemMediaEditor item={item} index={index} onMediaChange={handleItemMedia} />
+                </Field>
+                <Field label="Link do projeto (site, Instagram, etc.)">
+                  <Input
+                    value={item.projectUrl || ""}
+                    onChange={(e) => handleItemChange(index, "projectUrl", e.target.value)}
+                    placeholder="https://instagram.com/..."
                   />
                 </Field>
+                <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2">
+                  <Switch
+                    id={`show-link-${index}`}
+                    checked={!!item.showProjectLink}
+                    onCheckedChange={(v) => handleItemChange(index, "showProjectLink", v)}
+                  />
+                  <Label htmlFor={`show-link-${index}`} className="text-sm font-normal leading-snug">
+                    Mostrar botão &quot;Ver projeto&quot; no site público
+                  </Label>
+                </div>
               </div>
             </div>
           ))}
@@ -668,9 +893,40 @@ function PortfolioEditor({ data, setData }: { data: any; setData: any }) {
             <Field label="Descrição">
               <Textarea value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} placeholder="Breve descrição..." />
             </Field>
-            <Field label="Imagem">
-              <ImageUploader currentImage={newProject.image} onUploadComplete={(url) => setNewProject({ ...newProject, image: url })} />
+            <Field label="Imagens e vídeos">
+              <PortfolioItemMediaEditor
+                item={{
+                  image: newProject.image,
+                  media: newProject.media,
+                }}
+                index={-1}
+                onMediaChange={(idx, media) => {
+                  void idx;
+                  setNewProject((prev) => ({
+                    ...prev,
+                    media,
+                    image: legacyCoverFromMedia(media),
+                  }));
+                }}
+              />
             </Field>
+            <Field label="Link do projeto">
+              <Input
+                value={newProject.projectUrl}
+                onChange={(e) => setNewProject({ ...newProject, projectUrl: e.target.value })}
+                placeholder="https://"
+              />
+            </Field>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="new-show-link"
+                checked={newProject.showProjectLink}
+                onCheckedChange={(v) => setNewProject({ ...newProject, showProjectLink: v })}
+              />
+              <Label htmlFor="new-show-link" className="font-normal">
+                Mostrar botão no site
+              </Label>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancelar</Button>

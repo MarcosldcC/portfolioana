@@ -1,9 +1,9 @@
 import { handlePortfolioMediaUpload } from "@/lib/handle-portfolio-media-upload";
 
 export const runtime = "nodejs";
+/** Tempo máximo da função (upload grande); ajustar no plano Vercel se necessário. */
 export const maxDuration = 120;
 
-/** @deprecated Preferir POST /admin/api/upload-media. Mantido para compatibilidade. */
 export async function POST(request: Request) {
   return handlePortfolioMediaUpload(request);
 }

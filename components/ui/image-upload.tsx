@@ -27,7 +27,7 @@ export function ImageUpload({
         formData.append("file", file);
 
         try {
-            const res = await fetch("/admin/api/upload-image", {
+            const res = await fetch("/admin/api/upload-media", {
                 method: "POST",
                 body: formData,
             });
